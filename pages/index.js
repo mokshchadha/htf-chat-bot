@@ -5,10 +5,10 @@ import styles from "../styles/Home.module.css";
 import io from "socket.io-client";
 
 export default class Home extends React.Component {
-  state = { text: "", conversations: [], socket:{} };
+  state = { text: "", conversations: [], socket: {} };
 
   componentDidMount() {
-    this.socket = io('http://localhost:3000', {secure: true})
+    this.socket = io("http://localhost:3000", { secure: true });
     this.socket.on("now", (data) => {
       console.log("data", data);
     });
@@ -24,30 +24,31 @@ export default class Home extends React.Component {
     });
   }
 
-  componentDidUpdate() {
-    
-  }
+  componentDidUpdate() {}
 
   handleInput(e) {
     this.setState({ text: e.target.value });
   }
 
   sendText() {
-   const {conversations, text} = this.state
-    this.setState({conversations:[...conversations, {person:"You", value: text}]})
+    const { conversations, text } = this.state;
+    if (!text) return "";
+    this.setState({
+      conversations: [...conversations, { person: "You", value: text }],
+    });
     this.socket.emit("user-query-text", { text: text });
     console.log("emit done");
     this.setState({ text: "" });
   }
 
   render() {
-    return ( 
+    return (
       <div className={styles.container}>
-        <div>
+        <div className="text-green">
           {this.state.conversations.length > 0
             ? this.state.conversations.map((e) => (
                 <p key={e.value}>
-                  <span>{e.person}</span>
+                  <span style={{ marginRight: "5px" }}>{e.person}:- </span>
                   <span>{e.value}</span>
                 </p>
               ))
@@ -55,11 +56,21 @@ export default class Home extends React.Component {
         </div>
         <div>
           <input
+            style={{ border: "0.5px solid grey" }}
             type="text"
             value={this.state.text}
             onChange={(e) => this.handleInput(e)}
           />
-          <button onClick={() => this.sendText()}>Send</button>
+          <button
+            style={{
+              marginLeft: "10px",
+              border: "0.20px",
+              backgroundColor: "whitesmoke",
+            }}
+            onClick={() => this.sendText()}
+          >
+            Send
+          </button>
         </div>
       </div>
     );
